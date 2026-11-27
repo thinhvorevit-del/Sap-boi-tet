@@ -49,7 +49,7 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
   </div>
   <input id="tid" placeholder="Nhập ID TikTok (không cần @)">
   <div onclick="conn()" style="background:#28a745;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px">🔴 Kết nối Live TikTok</div>
-  <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối (Âm thanh đã bật 🔊)</div>
+  <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối (Âm thanh bật 🔊)</div>
   <div class="pgrid">
     <div class="pbtn" onclick="wk('Khách Xuân '+Math.floor(Math.random()*99),0)">🚶 Khách dạo chợ</div>
     <div class="pbtn" onclick="tg(1)">🕯️ Gói 1: Nhang</div>
@@ -96,12 +96,13 @@ function playSnd(type){
   initAudio();
   var now=ac.currentTime;
   if(type===1){
-    var o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.setValueAtTime(528,now);o.frequency.exponentialRampToValueAtTime(264,now+1.8);
-    g.gain.setValueAtTime(0.6,now);g.gain.exponentialRampToValueAtTime(0.01,now+1.8);o.connect(g);g.connect(ac.destination);o.start(now);o.stop(now+1.8);
+    var o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.setValueAtTime(528,now);o.frequency.exponentialRampToValueAtTime(264,now+1.5);
+    g.gain.setValueAtTime(0.6,now);g.gain.exponentialRampToValueAtTime(0.01,now+1.5);o.connect(g);g.connect(ac.destination);o.start(now);o.stop(now+1.5);
   }else if(type===2){
-    for(var i=0;i<6;i++){var o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.setValueAtTime(800+i*120,now+i*0.12);g.gain.setValueAtTime(0.4,now+i*0.12);g.gain.exponentialRampToValueAtTime(0.01,now+i*0.12+0.08);o.connect(g);g.connect(ac.destination);o.start(now+i*0.12);o.stop(now+i*0.12+0.08)}
+    for(var i=0;i<5;i++){var o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.setValueAtTime(800+i*120,now+i*0.1);g.gain.setValueAtTime(0.4,now+i*0.1);g.gain.exponentialRampToValueAtTime(0.01,now+i*0.1+0.08);o.connect(g);g.connect(ac.destination);o.start(now+i*0.1);o.stop(now+i*0.1+0.08)}
   }else if(type===3){
-    [523,659,784,1046].forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type="sawtooth";o.frequency.setValueAtTime(f,now+i*0.15);g.gain.setValueAtTime(0.4,now+i*0.15);g.gain.exponentialRampToValueAtTime(0.01,now+i*0.15+0.4);o.connect(g);g.connect(ac.destination);o.start(now+i*0.15);o.stop(now+i*0.15+0.4)});
+    var freqs=[523,659,784,1046];
+    for(var i=0;i<4;i++){var o=ac.createOscillator(),g=ac.createGain();o.type="sawtooth";o.frequency.setValueAtTime(freqs[i],now+i*0.12);g.gain.setValueAtTime(0.4,now+i*0.12);g.gain.exponentialRampToValueAtTime(0.01,now+i*0.12+0.35);o.connect(g);g.connect(ac.destination);o.start(now+i*0.12);o.stop(now+i*0.12+0.35)}
   }
 }
 setInterval(function(){var p=document.createElement("div");p.className="petal";p.style.left=Math.random()*100+"vw";p.style.width="10px";p.style.height="10px";document.body.appendChild(p);setTimeout(function(){p.remove()},5000)},600);

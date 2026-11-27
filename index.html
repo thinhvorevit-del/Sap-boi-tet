@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chợ Tết & Sạp Xin Quẻ Đầu Năm</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: linear-gradient(180deg, #8b0000 0%, #b22222 40%, #d4af37 100%); color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+    .petal { position: absolute; background: #ffb7c5; border-radius: 150% 0 150% 0; opacity: 0.8; pointer-events: none; animation: fall linear infinite; z-index: 1; }
+    @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
+    .price-board { background: rgba(60, 10, 10, 0.92); border: 2px solid #ffd700; border-radius: 10px; margin: 8px; padding: 8px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .price-title { text-align: center; color: #ffd700; font-weight: bold; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
+    .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; }
+    .price-item { background: rgba(255, 215, 0, 0.15); padding: 4px 6px; border-radius: 5px; border-left: 3px solid #ffd700; }
+    .price-item.vip { grid-column: span 2; background: linear-gradient(90deg, rgba(255,215,0,0.3), rgba(255,69,0,0.3)); border-left: 3px solid #ff4500; font-weight: bold; }
+    .highlight { color: #ffd700; font-weight: bold; }
+    .stage { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: space-between; z-index: 5; }
+    .stall-area { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin-top: 5px; }
+    .couplet { background: #b20000; border: 2px solid #ffd700; color: #ffd700; padding: 8px 4px; font-weight: bold; font-size: 12px; writing-mode: vertical-rl; text-orientation: upright; border-radius: 4px; }
+    .shrine-center { text-align: center; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 15px; border: 1px dashed #ffd700; }
+    .shaker-icon { font-size: 45px; display: inline-block; transition: transform 0.2s; }
+    .shaking { animation: shake 0.5s infinite; }
+    @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(0deg); } 75% { transform: rotate(-15deg); } 100% { transform: rotate(0deg); } }
+    .effect-popup { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%) scale(0); background: radial-gradient(circle, #fff8dc, #ffd700); color: #8b0000; padding: 15px 25px; border-radius: 15px; border: 4px solid #b20000; text-align: center; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: transform 0.3s ease; width: 80%; }
+    .effect-popup.show { transform: translate(-50%, -50%) scale(1); }
+    .calligraphy-char { font-size: 50px; font-weight: bold; margin: 5px 0; font-family: serif; }
+    .market-road { height: 75px; background: rgba(0, 0, 0, 0.25); border-top: 2px solid #ffd700; border-bottom: 2px solid #ffd700; position: relative; overflow: hidden; }
+    .walker { position: absolute; bottom: 5px; display: flex; flex-direction: column; align-items: center; transition: left 8s linear; z-index: 15; }
+    .walker-name { background: rgba(0,0,0,0.75); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; white-space: nowrap; border: 1px solid #ffd700; margin-bottom: 2px; }
+    .walker.vip .walker-name { background: #ffd700; color: #8b0000; font-weight: bold; }
+    .walker-avatar { font-size: 28px; }
+    .queue-container { height: 36vh; background: rgba(30, 5, 5, 0.92); border-top: 3px solid #ffd700; padding: 8px; display: flex; flex-direction: column; z-index: 20; }
+    .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; color: #ffd700; font-weight: bold; }
+    .queue-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .ticket { display: flex; align-items: center; background: #2b0909; border-radius: 8px; padding: 6px; border-left: 5px solid #00fa9a; gap: 8px; }
+    .ticket.pkg-3 { border-left-color: #00fa9a; }
+    .ticket.pkg-4 { border-left-color: #ffa500; background: #3d1605; }
+    .ticket.pkg-5 { border-left-color: #ffd700; background: linear-gradient(90deg, #4a1c00, #7a3b00); border: 1px solid #ffd700; }
+    .ticket-avatar { border-radius: 50%; object-fit: cover; border: 2px solid #ffd700; flex-shrink: 0; }
+    .pkg-3 .ticket-avatar { width: 36px; height: 36px; }
+    .pkg-4 .ticket-avatar { width: 52px; height: 52px; }
+    .pkg-5 .ticket-avatar { width: 65px; height: 65px; box-shadow: 0 0 10px #ffd700; }
+    .ticket-info { flex: 1; overflow: hidden; }
+    .ticket-badge { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 4px; font-weight: bold; margin-bottom: 2px; }
+    .pkg-3 .ticket-badge { background: #00fa9a; color: #000; }
+    .pkg-4 .ticket-badge { background: #ffa500; color: #000; }
+    .pkg-5 .ticket-badge { background: #ffd700; color: #8b0000; }
+    .ticket-user { font-weight: bold; font-size: 13px; color: #fff; }
+    .ticket-detail { font-size: 12px; color: #ffebcd; margin-top: 2px; word-wrap: break-word; }
+    .btn-done { background: #28a745; color: white; border: none; padding: 8px 10px; border-radius: 6px; font-weight: bold; font-size: 11px; }
+    .admin-toggle { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.5); color: #ffd700; border: 1px solid #ffd700; font-size: 10px; padding: 2px 6px; border-radius: 4px; z-index: 100; }
+    .admin-panel { display: none; position: absolute; top: 25px; right: 5px; background: rgba(0,0,0,0.95); border: 1px solid #ffd700; padding: 10px; border-radius: 8px; z-index: 100; width: 260px; }
+    .admin-panel input { width: 100%; padding: 6px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #ccc; }
+    .admin-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; }
+    .admin-btn { padding: 5px; font-size: 11px; border: none; border-radius: 4px; background: #d4af37; color: #000; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <button class="admin-toggle" onclick="toggleAdmin()">⚙️ Cài đặt / Test</button>
+  <div class="admin-panel" id="adminPanel">
+    <div style="font-size:11px; color:#ffd700; margin-bottom:4px;">Nhập ID TikTok (không cần @):</div>
+    <input type="text" id="tiktokIdInput" placeholder="VD: thayboi_chotet">
+    <button class="admin-btn" style="width:100%; background:#28a745; color:#fff;" onclick="connectTikTok()">🔴 Kết nối Live TikTok</button>
+    <div id="connStatus" style="font-size:10px; color:#00fa9a; margin-top:4px;">Trạng thái: Chưa kết nối</div>
+    <div style="font-size:11px; color:#ffd700; margin-top:8px; border-top:1px solid #444; padding-top:6px;">Chạy thử hiệu ứng (Test):</div>
+    <div class="admin-btn-grid">
+      <button class="admin-btn" onclick="testWalk()">🚶 Khách dạo chợ</button>
+      <button class="admin-btn" onclick="testGift(1)">🕯️ Gói 1: Nhang</button>
+      <button class="admin-btn" onclick="testGift(5)">🖌️ Gói 2: Xin chữ</button>
+      <button class="admin-btn" onclick="testGift(50)">🎋 Gói 3: Xem nhanh</button>
+      <button class="admin-btn" onclick="testGift(200)">🖼️ Gói 4: Luận ảnh</button>
+      <button class="admin-btn" style="background:#ff4500; color:#fff;" onclick="testGift(500)">👑 Gói 5: VIP</button>
+    </div>
+  </div>
+  <div class="price-board">
+    <div class="price-title">🏮 Sạp Gieo Quẻ & Xin Chữ Đầu Xuân 🏮</div>
+    <div class="price-grid">
+      <div class="price-item"><span class="highlight">Gói 1 (1 Xu):</span> Hoa hồng ➔ Thắp nhang</div>
+      <div class="price-item"><span class="highlight">Gói 2 (5 Xu):</span> Bánh chưng ➔ Xin chữ</div>
+      <div class="price-item"><span class="highlight">Gói 3 (50 Xu):</span> Pháo hoa ➔ Tuổi + Giới tính</div>
+      <div class="price-item"><span class="highlight">Gói 4 (200 Xu):</span> Súng tiền ➔ Luận Avatar</div>
+      <div class="price-item vip"><span class="highlight">👑 GÓI 5 VIP (500+ Xu):</span> Mũ Vua/Sư Tử ➔ Luận Toàn Diện (Tuổi vợ chồng, con cái, công danh, Avatar) - Ưu tiên Top 1</div>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="stall-area">
+      <div class="couplet">TÂN NIÊN HẠNH PHÚC</div>
+      <div class="shrine-center">
+        <div class="shaker-icon" id="shakerIcon">🎋</div>
+        <div style="font-size:11px; color:#ffd700; margin-top:4px;">Bình luận thông tin + Tặng quà</div>
+      </div>
+      <div class="couplet">VẠN SỰ NHƯ Ý</div>
+    </div>
+    <div class="effect-popup" id="effectPopup">
+      <div id="popupTitle" style="font-size:13px; font-weight:bold;">XIN CHỮ ĐẦU NĂM</div>
+      <div class="calligraphy-char" id="popupChar">PHÚC</div>
+      <div id="popupUser" style="font-size:12px; font-weight:bold;">Tặng bạn: Nguyễn Văn A</div>
+    </div>
+    <div class="market-road" id="marketRoad"></div>
+  </div>
+  <div class="queue-container">
+    <div class="queue-header">
+      <span>📜 HÀNG CHỜ LUẬN GIẢI (TỰ ĐỘNG XẾP VIP)</span>
+      <span id="queueCount">0 khách</span>
+    </div>
+    <div class="queue-list" id="queueList"></div>
+  </div>
+  <script>
+    const socket = io();
+    let queue = [];
+    const calligraphyWords = ["PHÚC", "LỘC", "THỌ", "TÂM", "AN", "ĐẠT", "NHẪN", "TÀI"];
+    setInterval(function() {
+      const petal = document.createElement("div");
+      petal.className = "petal";
+      petal.style.left = Math.random() * 100 + "vw";
+      petal.style.width = (Math.random() * 8 + 6) + "px";
+      petal.style.height = petal.style.width;
+      petal.style.animationDuration = (Math.random() * 4 + 4) + "s";
+      document.body.appendChild(petal);
+      setTimeout(function() { petal.remove(); }, 8000);
+    }, 500);
+    function toggleAdmin() {

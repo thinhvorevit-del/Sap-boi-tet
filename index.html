@@ -45,13 +45,13 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="panel" id="pn">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <b style="color:#ffd700;font-size:13px">⚙️ CÀI ĐẶT & CHẠY THỬ</b>
-    <div onclick="pn.style.display='none';snd(aTing)" style="background:#ff4500;padding:5px 10px;border-radius:5px;font-weight:bold;font-size:12px">Đóng ✕</div>
+    <div onclick="pn.style.display='none'" style="background:#ff4500;padding:5px 10px;border-radius:5px;font-weight:bold;font-size:12px">Đóng ✕</div>
   </div>
   <input id="tid" placeholder="Nhập ID TikTok (không cần @)">
   <div onclick="conn()" style="background:#28a745;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px">🔴 Kết nối Live TikTok</div>
   <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối</div>
   <div class="pgrid">
-    <div class="pbtn" onclick="wk('Khách Xuân '+Math.floor(Math.random()*99),0);snd(aTing)">🚶 Khách dạo chợ</div>
+    <div class="pbtn" onclick="wk('Khách Xuân '+Math.floor(Math.random()*99),0)">🚶 Khách dạo chợ</div>
     <div class="pbtn" onclick="tg(1)">🕯️ Gói 1: Nhang</div>
     <div class="pbtn" onclick="tg(5)">🖌️ Gói 2: Xin chữ</div>
     <div class="pbtn" onclick="tg(50)">🎋 Gói 3: Xem nhanh</div>
@@ -74,7 +74,7 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="stage">
   <div class="stall">
     <div class="cd">TÂN<br>NIÊN<br>HẠNH<br>PHÚC</div>
-    <div class="center" onclick="snd(aShk)"><div id="shk" style="font-size:45px">🎋</div><div style="font-size:11px;color:#ffd700">Bình luận thông tin + Tặng quà</div></div>
+    <div class="center"><div id="shk" style="font-size:45px">🎋</div><div style="font-size:11px;color:#ffd700">Bình luận thông tin + Tặng quà</div></div>
     <div class="cd">VẠN<br>SỰ<br>NHƯ<br>Ý</div>
   </div>
   <div class="pop" id="pop"><b id="pt" style="font-size:13px"></b><div id="pc" style="font-size:45px;font-weight:bold;margin:5px 0"></div><b id="pu" style="font-size:12px"></b></div>
@@ -84,9 +84,21 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="qbox">
   <div class="qhead">
     <span>📜 HÀNG CHỜ (<span id="qc">0</span> khách)</span>
-    <div class="btn" onclick="pn.style.display='block';snd(aTing)">⚙️ Cài đặt / Test</div>
+    <div class="btn" onclick="pn.style.display='block'">⚙️ Cài đặt / Test</div>
   </div>
   <div class="qlist" id="ql"></div>
 </div>
 
 <script>
+var sk=typeof io!=="undefined"?io():null,q=[],wds=["PHÚC","LỘC","THỌ","TÂM","AN","ĐẠT"];
+setInterval(function(){var p=document.createElement("div");p.className="petal";p.style.left=Math.random()*100+"vw";p.style.width="10px";p.style.height="10px";document.body.appendChild(p);setTimeout(function(){p.remove()},5000)},600);
+function conn(){var u=tid.value.trim();if(!u)return alert("Nhập ID!");st.innerText="Đang kết nối @"+u;if(sk)sk.emit("connectTikTok",u)}
+if(sk){sk.on("tiktokStatus",function(m){st.innerText=m});sk.on("chat",function(d){wk(d.nickname,0);var e=q.find(function(x){return x.id===d.uniqueId});if(e){e.cm=d.comment;rq()}});sk.on("gift",gd)}
+function wk(n,v){if(rd.children.length>10)rd.firstChild.remove();var d=document.createElement("div");d.className="wk"+(v?" vip":"");var l=Math.random()>.5;d.style.left=l?"-80px":"105vw";d.innerHTML='<div class="wn">'+n+'</div><div style="font-size:28px">'+(v?"🤴":"🧑")+'</div>';rd.appendChild(d);setTimeout(function(){d.style.left=l?"105vw":"-80px"},100);setTimeout(function(){d.remove()},8500)}
+function sp(t,c,u){pt.innerText=t;pc.innerText=c;pu.innerText=u;pop.classList.add("show");shk.classList.add("shake");setTimeout(function(){pop.classList.remove("show");shk.classList.remove("shake")},3000)}
+function rq(){q.sort(function(a,b){return b.p-a.p});qc.innerText=q.length;ql.innerHTML="";q.forEach(function(x,i){var d=document.createElement("div");d.className="tk p"+x.p;d.innerHTML='<img class="av" src="'+x.av+'"><div style="flex:1"><b style="font-size:10px;color:#ffd700">'+(x.p==5?"👑 GÓI 5 VIP":(x.p==4?"GÓI 4: LUẬN ẢNH":"GÓI 3: XEM NHANH"))+'</b><div style="font-weight:bold;font-size:13px">'+x.n+'</div><div style="font-size:12px;color:#ffebcd">'+(x.cm||"Mời đọc bình luận")+'</div></div><div onclick="q.splice('+i+',1);rq()" style="background:#28a745;padding:10px;border-radius:6px;font-weight:bold;font-size:12px">Xong ✓</div>';ql.appendChild(d)})}
+function gd(d){var c=d.diamondCount;wk(d.nickname,c>=500);if(c>=1&&c<5)sp("🕯️ THẮP NHANG 🕯️","BÌNH AN",d.nickname);else if(c>=5&&c<50)sp("🖌️ XIN CHỮ 🖌️",wds[Math.floor(Math.random()*wds.length)],d.nickname);else if(c>=50){var p=c>=500?5:(c>=200?4:3);sp("🎋 GIEO QUẺ 🎋","GÓI "+p,d.nickname);q.push({id:d.uniqueId,n:d.nickname,av:d.profilePictureUrl,cm:d.lastComment,p:p});rq()}}
+function tg(c){var u=c>=500?{n:"Bảo Trâm VIP",cm:"1992 - Chồng 1990, con 2019",av:"https://unsplash.com"}:(c>=200?{n:"Minh Quân",cm:"1995 - Hỏi công danh",av:"https://unsplash.com"}:{n:"Lan Anh",cm:"1998 Nữ - Xem tình duyên",av:"https://unsplash.com"});gd({uniqueId:"t"+Date.now(),nickname:u.n,profilePictureUrl:u.av,diamondCount:c,lastComment:u.cm})}
+</script>
+</body>
+</html>

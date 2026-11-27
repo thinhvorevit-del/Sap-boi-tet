@@ -3,196 +3,341 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Chợ Tết & Sạp Xin Quẻ</title>
+<title>Phiên Chợ Tết & Sạp Xin Quẻ VIP</title>
 <script src="/socket.io/socket.io.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-user-select:none;user-select:none}
-input{-webkit-user-select:text;user-select:text}
-body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.petal{position:absolute;background:#ffb7c5;border-radius:150% 0;opacity:.8;pointer-events:none;animation:fall 5s linear infinite;z-index:1}
-@keyframes fall{0%{transform:translateY(-10vh) rotate(0)}100%{transform:translateY(110vh) rotate(360deg)}}
-.box{background:rgba(60,10,10,.92);border:2px solid #ffd700;border-radius:10px;margin:8px;padding:8px;z-index:10}
-.title{text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:5px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px}
-.item{background:rgba(255,215,0,.15);padding:4px 6px;border-radius:5px;border-left:3px solid #ffd700}
-.vip{grid-column:span 2;background:rgba(255,69,0,.3);border-left:3px solid #ff4500;font-weight:bold}
-.hl{color:#ffd700;font-weight:bold}
-.stage{flex:1;position:relative;display:flex;flex-direction:column;justify-content:space-between;z-index:5}
-.stall{display:flex;justify-content:space-between;align-items:center;padding:8px 12px}
-.cd{background:#b20000;border:2px solid #ffd700;color:#ffd700;padding:6px 4px;font-weight:bold;font-size:11px;text-align:center;border-radius:4px;width:32px}
-.center{text-align:center;background:rgba(0,0,0,.3);padding:10px 18px;border-radius:15px;border:1px dashed #ffd700}
-.shake{animation:shk .4s infinite}@keyframes shk{25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
-.pop{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);background:#ffd700;color:#8b0000;padding:15px;border-radius:15px;border:4px solid #b20000;text-align:center;z-index:50;transition:.3s;width:80%;pointer-events:none}
-.pop.show{transform:translate(-50%,-50%) scale(1)}
-.road{height:75px;background:rgba(0,0,0,.25);border-top:2px solid #ffd700;border-bottom:2px solid #ffd700;position:relative;overflow:hidden}
-.wk{position:absolute;bottom:5px;display:flex;flex-direction:column;align-items:center;transition:left 8s linear;z-index:15}
-.wn{background:rgba(0,0,0,.8);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;border:1px solid #ffd700;white-space:nowrap}
-.wk.vip .wn{background:#ffd700;color:#8b0000;font-weight:bold}
-.qbox{height:38vh;background:rgba(30,5,5,.95);border-top:3px solid #ffd700;padding:8px;display:flex;flex-direction:column;z-index:20}
-.qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;color:#ffd700;font-weight:bold}
-.qlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
-.tk{display:flex;align-items:center;background:#2b0909;border-radius:8px;padding:6px;border-left:5px solid #00fa9a;gap:8px}
-.tk.p4{border-left-color:#ffa500;background:#3d1605}.tk.p5{border-left-color:#ffd700;background:#5e2700;border:1px solid #ffd700}
-.av{border-radius:50%;object-fit:cover;border:2px solid #ffd700;width:40px;height:40px}.p4 .av{width:52px;height:52px}.p5 .av{width:64px;height:64px}
-.btn{background:#ffd700;color:#8b0000;border:2px solid #fff;font-size:13px;font-weight:bold;padding:8px 12px;border-radius:8px;cursor:pointer}
-.panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ffd700;padding:15px;border-radius:12px;z-index:9999;width:88vw;max-width:340px;box-shadow:0 0 30px #000}
-.panel input{width:100%;padding:10px;margin:6px 0;border-radius:6px;font-size:14px}
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.pbtn{padding:10px 5px;font-size:12px;border-radius:6px;background:#d4af37;color:#000;font-weight:bold;text-align:center;cursor:pointer}
+  :root {
+    --gold: #ffd700;
+    --gold-dark: #b8860b;
+    --red-deep: #4a0000;
+    --red-royal: #8b0000;
+    --red-bright: #c41e3a;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  input { -webkit-user-select: text; user-select: text; }
+  body {
+    background: radial-gradient(circle at top, var(--red-bright), var(--red-royal) 45%, var(--red-deep) 100%);
+    color: #fff;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Hoa đào rơi GPU 60fps */
+  .petal {
+    position: absolute;
+    background: linear-gradient(135deg, #ffc0cb, #ff69b4);
+    border-radius: 150% 0 150% 0;
+    opacity: 0.85;
+    pointer-events: none;
+    animation: fall 6s linear infinite;
+    z-index: 1;
+    will-change: transform;
+  }
+  @keyframes fall {
+    0% { transform: translate3d(0, -10vh, 0) rotate(0deg); }
+    100% { transform: translate3d(20px, 110vh, 0) rotate(360deg); }
+  }
+
+  /* Bảng Giá Sơn Son Thếp Vàng */
+  .board {
+    background: linear-gradient(180deg, rgba(50, 5, 5, 0.95), rgba(30, 0, 0, 0.95));
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    margin: 8px;
+    padding: 8px;
+    z-index: 10;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(255, 215, 0, 0.2);
+  }
+  .board-title {
+    text-align: center;
+    color: var(--gold);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    text-shadow: 0 2px 4px #000;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    font-size: 11px;
+  }
+  .pkg-card {
+    background: rgba(255, 215, 0, 0.12);
+    padding: 5px 7px;
+    border-radius: 6px;
+    border-left: 3px solid var(--gold);
+    line-height: 1.3;
+  }
+  .pkg-card.vip {
+    grid-column: span 2;
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.28), rgba(255, 69, 0, 0.35));
+    border: 1px solid var(--gold);
+    border-left: 4px solid #ff4500;
+    font-weight: 600;
+  }
+  .hl { color: var(--gold); font-weight: 700; }
+
+  /* Sân khấu Sạp Bói */
+  .stage {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 5;
+  }
+  .stall {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+  }
+  .couplet {
+    background: linear-gradient(180deg, #a00000, #600000);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 8px 4px;
+    font-weight: 800;
+    font-size: 11px;
+    line-height: 1.35;
+    text-align: center;
+    border-radius: 6px;
+    width: 32px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  }
+  .altar {
+    text-align: center;
+    background: radial-gradient(circle, rgba(255,215,0,0.18), rgba(0,0,0,0.4));
+    padding: 10px 20px;
+    border-radius: 16px;
+    border: 1.5px dashed var(--gold);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+  }
+  .shaker { font-size: 46px; display: inline-block; }
+  .shake { animation: shk 0.35s infinite; }
+  @keyframes shk {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(18deg); }
+    75% { transform: rotate(-18deg); }
+  }
+
+  /* Popup Hiệu ứng Quẻ & Chữ */
+  .popup {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(0);
+    background: radial-gradient(circle, #fffbe6, #ffd700);
+    color: var(--red-royal);
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 4px solid #a00000;
+    text-align: center;
+    z-index: 50;
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 82%;
+    pointer-events: none;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.85);
+  }
+  .popup.show { transform: translate3d(-50%, -50%, 0) scale(1); }
+
+  /* Đường Chợ Xuân */
+  .road {
+    height: 76px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.45));
+    border-top: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+  .walker {
+    position: absolute;
+    bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: left 8.5s linear;
+    z-index: 15;
+    will-change: left;
+  }
+  .w-name {
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    border: 1px solid var(--gold);
+    white-space: nowrap;
+    margin-bottom: 2px;
+  }
+  .walker.vip .w-name {
+    background: linear-gradient(90deg, #ffd700, #ffa500);
+    color: #4a0000;
+    font-weight: 800;
+    box-shadow: 0 0 8px #ffd700;
+  }
+
+  /* Khu vực Hàng Chờ VIP */
+  .queue-box {
+    height: 38vh;
+    background: rgba(25, 2, 2, 0.96);
+    border-top: 3px solid var(--gold);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+  }
+  .q-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 800;
+  }
+  .q-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ticket {
+    display: flex;
+    align-items: center;
+    background: #2d0808;
+    border-radius: 10px;
+    padding: 7px;
+    border-left: 5px solid #00fa9a;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .ticket.p4 { border-left-color: #ffa500; background: #3f1504; }
+  .ticket.p5 {
+    border-left-color: var(--gold);
+    background: linear-gradient(90deg, #521e00, #803600);
+    border: 1.5px solid var(--gold);
+  }
+  .av {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  .p4 .av { width: 52px; height: 52px; }
+  .p5 .av { width: 64px; height: 64px; box-shadow: 0 0 12px var(--gold); }
+
+  /* Nút Bấm Chuẩn Cảm Ứng iOS */
+  .btn-main {
+    background: linear-gradient(180deg, #ffe44d, #e6b800);
+    color: #4a0000;
+    border: 2px solid #fff;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+  }
+  .btn-main:active { transform: scale(0.95); }
+
+  /* Bảng Điều Khiển Chủ Sạp */
+  .panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1a0303;
+    border: 2px solid var(--gold);
+    padding: 16px;
+    border-radius: 14px;
+    z-index: 9999;
+    width: 90vw;
+    max-width: 350px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.95);
+  }
+  .panel input {
+    width: 100%;
+    padding: 11px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1.5px solid var(--gold);
+    font-size: 15px;
+    background: #fff;
+    color: #000;
+  }
+  .p-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .p-btn {
+    padding: 11px 6px;
+    font-size: 12px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #f0c84b, #cfa01d);
+    color: #2b0000;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+  }
+  .p-btn:active { transform: scale(0.96); }
 </style>
 </head>
 <body>
-<div class="panel" id="pn">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <b style="color:#ffd700;font-size:13px">⚙️ CÀI ĐẶT & CHẠY THỬ</b>
-    <div onclick="togglePn(0)" style="background:#ff4500;padding:6px 12px;border-radius:5px;font-weight:bold;font-size:12px">Đóng ✕</div>
+
+  <!-- Modal Cài Đặt & Test -->
+  <div class="panel" id="panelModal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <b style="color:#ffd700; font-size:14px;">⚙️ ĐIỀU KHIỂN CHỦ SẠP</b>
+      <div data-act="closePanel" style="background:#d9381e; color:#fff; padding:6px 12px; border-radius:6px; font-weight:800; font-size:12px;">Đóng ✕</div>
+    </div>
+    <input id="tiktokInput" type="text" placeholder="Nhập ID TikTok (VD: thayboi_chotet)">
+    <div data-act="connect" style="background:#218838; color:#fff; padding:11px; text-align:center; border-radius:8px; font-weight:800; font-size:13px;">🔴 Kết nối Live TikTok</div>
+    <div id="statusText" style="font-size:11px; color:#00fa9a; margin-top:6px;">Trạng thái: Sẵn sàng (Loa đã mở 🔊)</div>
+    
+    <div style="font-size:11px; color:#ffd700; margin-top:10px; border-top:1px solid #444; padding-top:8px; font-weight:700;">CHẠY THỬ HIỆU ỨNG & ÂM THANH:</div>
+    <div class="p-grid">
+      <div class="p-btn" data-act="testWalk">🚶 Khách dạo chợ</div>
+      <div class="p-btn" data-act="testGift" data-coins="1">🕯️ Gói 1: Nhang</div>
+      <div class="p-btn" data-act="testGift" data-coins="5">🖌️ Gói 2: Xin chữ</div>
+      <div class="p-btn" data-act="testGift" data-coins="50">🎋 Gói 3: Xem nhanh</div>
+      <div class="p-btn" data-act="testGift" data-coins="200">🖼️ Gói 4: Luận ảnh</div>
+      <div class="p-btn" data-act="testGift" data-coins="500" style="background:linear-gradient(180deg,#ff5e3a,#d92b04); color:#fff;">👑 Gói 5: VIP</div>
+    </div>
   </div>
-  <input id="tid" placeholder="Nhập ID TikTok (không cần @)">
-  <div onclick="conn()" style="background:#28a745;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px">🔴 Kết nối Live TikTok</div>
-  <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối (Âm thanh bật 🔊)</div>
-  <div class="pgrid">
-    <div class="pbtn" onclick="wk('Khách Xuân '+Math.floor(Math.random()*99),0)">🚶 Khách dạo chợ</div>
-    <div class="pbtn" onclick="tg(1)">🕯️ Gói 1: Nhang</div>
-    <div class="pbtn" onclick="tg(5)">🖌️ Gói 2: Xin chữ</div>
-    <div class="pbtn" onclick="tg(50)">🎋 Gói 3: Xem nhanh</div>
-    <div class="pbtn" onclick="tg(200)">🖼️ Gói 4: Luận ảnh</div>
-    <div class="pbtn" style="background:#ff4500;color:#fff" onclick="tg(500)">👑 Gói 5: VIP</div>
+
+  <!-- Bảng Giá -->
+  <div class="board">
+    <div class="board-title">🏮 SẠP GIEO QUẺ & XIN CHỮ ĐẦU XUÂN 🏮</div>
+    <div class="grid">
+      <div class="pkg-card"><span class="hl">Gói 1 (1 Xu):</span> Hoa hồng ➔ Thắp nhang</div>
+      <div class="pkg-card"><span class="hl">Gói 2 (5 Xu):</span> Bánh chưng ➔ Xin chữ</div>
+      <div class="pkg-card"><span class="hl">Gói 3 (50 Xu):</span> Pháo hoa ➔ Tuổi + Giới tính</div>
+      <div class="pkg-card"><span class="hl">Gói 4 (200 Xu):</span> Súng tiền ➔ Luận Avatar</div>
+      <div class="pkg-card vip"><span class="hl">👑 GÓI 5 VIP (500+ Xu):</span> Mũ Vua/Sư Tử ➔ Luận Toàn Diện (Vợ chồng, con cái, công danh, Avatar) - Ưu tiên Top 1</div>
+    </div>
   </div>
-</div>
 
-<div class="box">
-  <div class="title">🏮 SẠP GIEO QUẺ & XIN CHỮ ĐẦU XUÂN 🏮</div>
-  <div class="grid">
-    <div class="item"><span class="hl">Gói 1 (1 Xu):</span> Hoa hồng ➔ Thắp nhang</div>
-    <div class="item"><span class="hl">Gói 2 (5 Xu):</span> Bánh chưng ➔ Xin chữ</div>
-    <div class="item"><span class="hl">Gói 3 (50 Xu):</span> Pháo hoa ➔ Tuổi + Giới tính</div>
-    <div class="item"><span class="hl">Gói 4 (200 Xu):</span> Súng tiền ➔ Luận Avatar</div>
-    <div class="item vip"><span class="hl">👑 GÓI 5 VIP (500+ Xu):</span> Mũ Vua/Sư Tử ➔ Luận Toàn Diện (Vợ chồng, con cái, công danh, Avatar) - Top 1</div>
-  </div>
-</div>
-
-<div class="stage">
-  <div class="stall">
-    <div class="cd">TÂN<br>NIÊN<br>HẠNH<br>PHÚC</div>
-    <div class="center"><div id="shk" style="font-size:45px">🎋</div><div style="font-size:11px;color:#ffd700">Bình luận thông tin + Tặng quà</div></div>
-    <div class="cd">VẠN<br>SỰ<br>NHƯ<br>Ý</div>
-  </div>
-  <div class="pop" id="pop"><b id="pt" style="font-size:13px"></b><div id="pc" style="font-size:45px;font-weight:bold;margin:5px 0"></div><b id="pu" style="font-size:12px"></b></div>
-  <div class="road" id="rd"></div>
-</div>
-
-<div class="qbox">
-  <div class="qhead">
-    <span>📜 HÀNG CHỜ (<span id="qc">0</span> khách)</span>
-    <div class="btn" onclick="togglePn(1)">⚙️ Cài đặt / Test</div>
-  </div>
-  <div class="qlist" id="ql"></div>
-</div>
-
-<script>
-var ac=null;
-function initAudio(){
-  try{
-    if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();
-    if(ac&&ac.state==="suspended")ac.resume();
-  }catch(e){}
-}
-function togglePn(show){
-  initAudio();
-  document.getElementById("pn").style.display=show?"block":"none";
-}
-function playTone(freq,type,delay,dur){
-  try{
-    initAudio();
-    if(!ac)return;
-    var now=ac.currentTime+delay;
-    var o=ac.createOscillator(),g=ac.createGain();
-    o.type=type;
-    o.frequency.setValueAtTime(freq,now);
-    g.gain.setValueAtTime(0.5,now);
-    g.gain.exponentialRampToValueAtTime(0.01,now+dur);
-    o.connect(g);
-    g.connect(ac.destination);
-    o.start(now);
-    o.stop(now+dur);
-  }catch(e){}
-}
-function playSnd(type){
-  if(type===1){
-    playTone(528,"sine",0,1.5);
-  }else if(type===2){
-    playTone(800,"triangle",0,0.08);
-    playTone(950,"triangle",0.1,0.08);
-    playTone(1100,"triangle",0.2,0.08);
-    playTone(1250,"triangle",0.3,0.08);
-  }else if(type===3){
-    playTone(440,"sawtooth",0,0.3);
-    playTone(554,"sawtooth",0.12,0.3);
-    playTone(659,"sawtooth",0.24,0.3);
-    playTone(880,"sawtooth",0.36,0.5);
-  }
-}
-
-var sk=typeof io!=="undefined"?io():null;
-var q=[];
-setInterval(function(){
-  var p=document.createElement("div");
-  p.className="petal";
-  p.style.left=Math.random()*100+"vw";
-  p.style.width="10px";
-  p.style.height="10px";
-  document.body.appendChild(p);
-  setTimeout(function(){p.remove()},5000);
-},600);
-
-function conn(){
-  var u=document.getElementById("tid").value.trim();
-  if(!u)return alert("Nhập ID TikTok của bạn!");
-  document.getElementById("st").innerText="Đang kết nối @"+u+"...";
-  if(sk)sk.emit("connectTikTok",u);
-}
-
-if(sk){
-  sk.on("tiktokStatus",function(m){document.getElementById("st").innerText=m});
-  sk.on("chat",function(d){
-    wk(d.nickname,0);
-    var e=q.find(function(x){return x.id===d.uniqueId});
-    if(e){e.cm=d.comment;rq();}
-  });
-  sk.on("gift",gd);
-}
-
-function wk(n,v){
-  var rd=document.getElementById("rd");
-  if(rd.children.length>10)rd.firstChild.remove();
-  var d=document.createElement("div");
-  d.className="wk"+(v?" vip":"");
-  var l=Math.random()>0.5;
-  d.style.left=l?"-80px":"105vw";
-  d.innerHTML='<div class="wn">'+n+'</div><div style="font-size:28px">'+(v?"🤴":"🧑")+'</div>';
-  rd.appendChild(d);
-  setTimeout(function(){d.style.left=l?"105vw":"-80px"},100);
-  setTimeout(function(){d.remove()},8500);
-}
-
-function sp(t,c,u){
-  document.getElementById("pt").innerText=t;
-  document.getElementById("pc").innerText=c;
-  document.getElementById("pu").innerText=u;
-  document.getElementById("pop").classList.add("show");
-  document.getElementById("shk").classList.add("shake");
-  setTimeout(function(){
-    document.getElementById("pop").classList.remove("show");
-    document.getElementById("shk").classList.remove("shake");
-  },3000);
-}
-
-function rq(){
-  q.sort(function(a,b){return b.p-a.p});
-  document.getElementById("qc").innerText=q.length;
-  var ql=document.getElementById("ql");
-  ql.innerHTML="";
-  q.forEach(function(x,i){
-    var d=document.createElement("div");
-    d.className="tk p"+x.p;
-    var lbl=x.p===5?"👑 GÓI 5 VIP":(x.p===4?"GÓI 4: LUẬN ẢNH":"GÓI 3: XEM NHANH");
+  <!-- Sân Khấu -->
+  <div class="stage">

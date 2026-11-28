@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Chợ Tết & Sạp Xin Quẻ</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-user-select:none;user-select:none}
-input{-webkit-user-select:text;user-select:text}
-body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.petal{position:absolute;background:#ffb7c5;border-radius:150% 0;opacity:.8;pointer-events:none;animation:fall 5s linear infinite;z-index:1}
-@keyframes fall{0%{transform:translateY(-10vh) rotate(0)}100%{transform:translateY(110vh) rotate(360deg)}}
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none}
+input{user-select:text;-webkit-user-select:text}
+.petal{position:fixed;top:-20px;background:#ffb7c5;border-radius:150% 0;opacity:.8;pointer-events:none;animation:fall 5s linear forwards;z-index:1}
+@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(360deg)}}
 .box{background:rgba(60,10,10,.92);border:2px solid #ffd700;border-radius:10px;margin:8px;padding:8px;z-index:10;position:relative}
-.title{text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:5px;padding-right:65px}
-.mbtn{position:absolute;top:6px;right:8px;background:#ffd700;color:#8b0000;border:1px solid #fff;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:bold;cursor:pointer;z-index:25}
+.title{text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:5px;padding-right:70px}
+.mbtn{position:absolute;top:6px;right:8px;background:#ffd700;color:#8b0000;border:2px solid #fff;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:bold;cursor:pointer;z-index:30}
 .mbtn.on{background:#00fa9a;color:#000}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px}
 .item{background:rgba(255,215,0,.15);padding:4px 6px;border-radius:5px;border-left:3px solid #ffd700}
@@ -26,21 +26,21 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 .pop{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);background:#ffd700;color:#8b0000;padding:15px;border-radius:15px;border:4px solid #b20000;text-align:center;z-index:50;transition:.3s;width:80%;pointer-events:none}
 .pop.show{transform:translate(-50%,-50%) scale(1)}
 .road{height:75px;background:rgba(0,0,0,.25);border-top:2px solid #ffd700;border-bottom:2px solid #ffd700;position:relative;overflow:hidden}
-.wk{position:absolute;bottom:5px;display:flex;flex-direction:column;align-items:center;transition:left 8s linear;z-index:15}
+.wk{position:absolute;bottom:5px;display:flex;flex-direction:column;align-items:center;transition:left 8s linear;z-index:15;pointer-events:none}
 .wn{background:rgba(0,0,0,.8);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;border:1px solid #ffd700;white-space:nowrap}
 .wk.vip .wn{background:#ffd700;color:#8b0000;font-weight:bold}
-.qbox{height:38vh;background:rgba(30,5,5,.95);border-top:3px solid #ffd700;padding:8px;display:flex;flex-direction:column;z-index:20}
+.qbox{height:38vh;background:rgba(30,5,5,.95);border-top:3px solid #ffd700;padding:8px;display:flex;flex-direction:column;z-index:20;position:relative}
 .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;color:#ffd700;font-weight:bold}
 .qlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
 .tk{display:flex;align-items:center;background:#2b0909;border-radius:8px;padding:6px;border-left:5px solid #00fa9a;gap:8px}
 .tk.p4{border-left-color:#ffa500;background:#3d1605}.tk.p5{border-left-color:#ffd700;background:#5e2700;border:1px solid #ffd700}
 .av{border-radius:50%;object-fit:cover;border:2px solid #ffd700;width:40px;height:40px}.p4 .av{width:52px;height:52px}.p5 .av{width:64px;height:64px}
-.btn{background:#ffd700;color:#8b0000;border:2px solid #fff;font-size:13px;font-weight:bold;padding:8px 12px;border-radius:8px;cursor:pointer}
-.panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ffd700;padding:15px;border-radius:12px;z-index:999;width:88vw;max-width:340px;box-shadow:0 0 30px rgba(0,0,0,.9)}
-.panel input{width:100%;padding:10px;margin:6px 0;border-radius:6px;font-size:14px}
-.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.pbtn{padding:10px 5px;font-size:12px;border-radius:6px;background:#d4af37;color:#000;font-weight:bold;text-align:center;cursor:pointer}
-.pbtn:active,.btn:active,.mbtn:active{transform:scale(0.95)}
+.btn{background:#ffd700;color:#8b0000;border:2px solid #fff;font-size:13px;font-weight:bold;padding:8px 14px;border-radius:8px;cursor:pointer;position:relative;z-index:30}
+.panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ffd700;padding:15px;border-radius:12px;z-index:9999;width:88vw;max-width:340px;box-shadow:0 0 40px rgba(0,0,0,.95)}
+.panel input{width:100%;padding:10px;margin:8px 0;border-radius:6px;font-size:14px;border:1px solid #ffd700;background:#fff;color:#000}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pbtn{padding:12px 5px;font-size:12px;border-radius:6px;background:#d4af37;color:#000;font-weight:bold;text-align:center;cursor:pointer;border:none}
+button:active,.pbtn:active{transform:scale(0.95);opacity:0.85}
 </style>
 </head>
 <body>
@@ -48,24 +48,24 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="panel" id="pn">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <b style="color:#ffd700;font-size:13px">⚙️ CÀI ĐẶT & CHẠY THỬ</b>
-    <button id="btnClose" style="background:#ff4500;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-weight:bold;font-size:12px;cursor:pointer">Đóng ✕</button>
+    <button type="button" id="btnClose" style="background:#ff4500;color:#fff;border:none;padding:6px 12px;border-radius:5px;font-weight:bold;font-size:12px;cursor:pointer">Đóng ✕</button>
   </div>
-  <input id="tid" placeholder="Nhập ID TikTok (không cần @)">
-  <button id="btnConn" style="width:100%;background:#28a745;color:#fff;border:none;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px;cursor:pointer">🔴 Kết nối Live TikTok</button>
-  <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối</div>
+  <input id="tid" type="text" placeholder="Nhập ID TikTok (không cần @)">
+  <button type="button" id="btnConn" style="width:100%;background:#28a745;color:#fff;border:none;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px;cursor:pointer">🔴 Kết nối Live TikTok</button>
+  <div id="st" style="font-size:11px;color:#00fa9a;margin-top:6px">Trạng thái: Sẵn sàng</div>
   <div class="pgrid">
-    <div class="pbtn" id="tWalk">🚶 Khách dạo chợ</div>
-    <div class="pbtn" id="tG1">🕯️ Gói 1: Nhang</div>
-    <div class="pbtn" id="tG2">🖌️ Gói 2: Xin chữ</div>
-    <div class="pbtn" id="tG3">🎋 Gói 3: Xem nhanh</div>
-    <div class="pbtn" id="tG4">🖼️ Gói 4: Luận ảnh</div>
-    <div class="pbtn" id="tG5" style="background:#ff4500;color:#fff">👑 Gói 5: VIP</div>
+    <button type="button" class="pbtn" id="tWalk">🚶 Khách dạo chợ</button>
+    <button type="button" class="pbtn" id="tG1">🕯️ Gói 1: Nhang</button>
+    <button type="button" class="pbtn" id="tG2">🖌️ Gói 2: Xin chữ</button>
+    <button type="button" class="pbtn" id="tG3">🎋 Gói 3: Xem nhanh</button>
+    <button type="button" class="pbtn" id="tG4">🖼️ Gói 4: Luận ảnh</button>
+    <button type="button" class="pbtn" id="tG5" style="background:#ff4500;color:#fff">👑 Gói 5: VIP</button>
   </div>
 </div>
 
 <div class="box">
   <div class="title">🏮 SẠP GIEO QUẺ & XIN CHỮ ĐẦU XUÂN 🏮</div>
-  <button class="mbtn" id="mb">🔇 Nhạc</button>
+  <button type="button" class="mbtn" id="mb">🔇 Nhạc</button>
   <div class="grid">
     <div class="item"><span class="hl">Gói 1 (1 Xu):</span> Hoa hồng ➔ Thắp nhang</div>
     <div class="item"><span class="hl">Gói 2 (5 Xu):</span> Bánh chưng ➔ Xin chữ</div>
@@ -88,20 +88,20 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="qbox">
   <div class="qhead">
     <span>📜 HÀNG CHỜ (<span id="qc">0</span> khách)</span>
-    <button class="btn" id="btnOpen">⚙️ Cài đặt / Test</button>
+    <button type="button" class="btn" id="btnOpen">⚙️ Cài đặt / Test</button>
   </div>
   <div class="qlist" id="ql"></div>
 </div>
 
-<!-- Tải Socket.io an toàn không làm treo trang nếu lỗi -->
-<script src="/socket.io/socket.io.js" onerror="console.log('Chạy chế độ Offline/Test')"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  var sk = (typeof io !== "undefined") ? io() : null;
+(function() {
   var q = [];
   var wds = ["PHÚC", "LỘC", "THỌ", "TÂM", "AN", "ĐẠT", "TÀI", "VƯỢNG"];
+  var sk = null;
 
-  // ================= HỆ THỐNG ÂM THANH =================
+  // ==========================================
+  // 1. HỆ THỐNG ÂM THANH ĐA TƯƠNG THÍCH
+  // ==========================================
   var ac = null, mOn = false, mTm = null, step = 0;
   var notes = [
     523.25, 523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25,
@@ -110,14 +110,16 @@ document.addEventListener("DOMContentLoaded", function() {
     587.33, 523.25, 440.00, 523.25, 523.25, 0, 0, 0
   ];
 
-  function initAc() {
-    if (!ac) {
-      var AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) ac = new AudioContext();
-    }
-    if (ac && ac.state === "suspended") {
-      ac.resume();
-    }
+  function unlockAudio() {
+    try {
+      if (!ac) {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) ac = new Ctx();
+      }
+      if (ac && ac.state === "suspended") {
+        ac.resume();
+      }
+    } catch (e) {}
   }
 
   function tone(f, d, v, t) {
@@ -154,14 +156,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
   var mb = document.getElementById("mb");
   function startM() {
-    initAc();
+    unlockAudio();
     if (mTm) clearInterval(mTm);
     mOn = true;
-    mb.innerText = "🔊 Nhạc";
+    mb.textContent = "🔊 Nhạc";
     mb.classList.add("on");
     mTm = setInterval(function() {
       if (!mOn) return;
-      tone(notes[step % notes.length], 0.3, 0.08, "triangle");
+      tone(notes[step % notes.length], 0.3, 0.09, "triangle");
       step++;
     }, 330);
   }
@@ -169,20 +171,13 @@ document.addEventListener("DOMContentLoaded", function() {
   function stopM() {
     mOn = false;
     if (mTm) clearInterval(mTm);
-    mb.innerText = "🔇 Nhạc";
+    mb.textContent = "🔇 Nhạc";
     mb.classList.remove("on");
   }
 
-  mb.addEventListener("click", function() {
-    mOn ? stopM() : startM();
-  });
-
   function sfx(lv) {
-    initAc();
+    unlockAudio();
     if (lv === 5) {
-      drum(160, 0.2, 0.4);
-      setTimeout(function() { drum(160, 0.2, 0.4); }, 140);
-      setTimeout(function() { drum(220, 0.35, 0.45); }, 280);
-      setTimeout(function() { tone(523.25, 0.4, 0.25); tone(659.25, 0.4, 0.25); tone(783.99, 0.5, 0.25); }, 300);
-      setTimeout(function() { tone(1046.5, 0.7, 0.3); }, 450);
-    } else if (lv >= 3) {
+      drum(160, 0.2, 0.45);
+      setTimeout(function() { drum(160, 0.2, 0.45); }, 140);
+      setTimeout(function() { drum(220, 0.35, 0.5); }, 280);

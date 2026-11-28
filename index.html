@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Chợ Tết & Sạp Xin Quẻ</title>
-<script src="/socket.io/socket.io.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif;-webkit-user-select:none;user-select:none}
 input{-webkit-user-select:text;user-select:text}
@@ -12,8 +11,8 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 .petal{position:absolute;background:#ffb7c5;border-radius:150% 0;opacity:.8;pointer-events:none;animation:fall 5s linear infinite;z-index:1}
 @keyframes fall{0%{transform:translateY(-10vh) rotate(0)}100%{transform:translateY(110vh) rotate(360deg)}}
 .box{background:rgba(60,10,10,.92);border:2px solid #ffd700;border-radius:10px;margin:8px;padding:8px;z-index:10;position:relative}
-.title{text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:5px;padding-right:55px}
-.mbtn{position:absolute;top:6px;right:8px;background:#ffd700;color:#8b0000;border:1px solid #fff;border-radius:6px;padding:3px 7px;font-size:11px;font-weight:bold;cursor:pointer}
+.title{text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:5px;padding-right:65px}
+.mbtn{position:absolute;top:6px;right:8px;background:#ffd700;color:#8b0000;border:1px solid #fff;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:bold;cursor:pointer;z-index:25}
 .mbtn.on{background:#00fa9a;color:#000}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:11px}
 .item{background:rgba(255,215,0,.15);padding:4px 6px;border-radius:5px;border-left:3px solid #ffd700}
@@ -24,7 +23,7 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 .cd{background:#b20000;border:2px solid #ffd700;color:#ffd700;padding:6px 4px;font-weight:bold;font-size:11px;text-align:center;border-radius:4px;width:32px}
 .center{text-align:center;background:rgba(0,0,0,.3);padding:10px 18px;border-radius:15px;border:1px dashed #ffd700}
 .shake{animation:shk .4s infinite}@keyframes shk{25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
-.pop{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);background:#ffd700;color:#8b0000;padding:15px;border-radius:15px;border:4px solid #b20000;text-align:center;z-index:50;transition:.3s;width:80%}
+.pop{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);background:#ffd700;color:#8b0000;padding:15px;border-radius:15px;border:4px solid #b20000;text-align:center;z-index:50;transition:.3s;width:80%;pointer-events:none}
 .pop.show{transform:translate(-50%,-50%) scale(1)}
 .road{height:75px;background:rgba(0,0,0,.25);border-top:2px solid #ffd700;border-bottom:2px solid #ffd700;position:relative;overflow:hidden}
 .wk{position:absolute;bottom:5px;display:flex;flex-direction:column;align-items:center;transition:left 8s linear;z-index:15}
@@ -37,34 +36,36 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 .tk.p4{border-left-color:#ffa500;background:#3d1605}.tk.p5{border-left-color:#ffd700;background:#5e2700;border:1px solid #ffd700}
 .av{border-radius:50%;object-fit:cover;border:2px solid #ffd700;width:40px;height:40px}.p4 .av{width:52px;height:52px}.p5 .av{width:64px;height:64px}
 .btn{background:#ffd700;color:#8b0000;border:2px solid #fff;font-size:13px;font-weight:bold;padding:8px 12px;border-radius:8px;cursor:pointer}
-.panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ffd700;padding:15px;border-radius:12px;z-index:999;width:88vw;max-width:340px}
+.panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ffd700;padding:15px;border-radius:12px;z-index:999;width:88vw;max-width:340px;box-shadow:0 0 30px rgba(0,0,0,.9)}
 .panel input{width:100%;padding:10px;margin:6px 0;border-radius:6px;font-size:14px}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .pbtn{padding:10px 5px;font-size:12px;border-radius:6px;background:#d4af37;color:#000;font-weight:bold;text-align:center;cursor:pointer}
+.pbtn:active,.btn:active,.mbtn:active{transform:scale(0.95)}
 </style>
 </head>
 <body>
+
 <div class="panel" id="pn">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <b style="color:#ffd700;font-size:13px">⚙️ CÀI ĐẶT & CHẠY THỬ</b>
-    <div onclick="pn.style.display='none'" style="background:#ff4500;padding:5px 10px;border-radius:5px;font-weight:bold;font-size:12px;cursor:pointer">Đóng ✕</div>
+    <button id="btnClose" style="background:#ff4500;color:#fff;border:none;padding:5px 10px;border-radius:5px;font-weight:bold;font-size:12px;cursor:pointer">Đóng ✕</button>
   </div>
   <input id="tid" placeholder="Nhập ID TikTok (không cần @)">
-  <div onclick="conn()" style="background:#28a745;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px;cursor:pointer">🔴 Kết nối Live TikTok</div>
+  <button id="btnConn" style="width:100%;background:#28a745;color:#fff;border:none;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px;cursor:pointer">🔴 Kết nối Live TikTok</button>
   <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối</div>
   <div class="pgrid">
-    <div class="pbtn" onclick="wk('Khách Xuân '+Math.floor(Math.random()*99),0)">🚶 Khách dạo chợ</div>
-    <div class="pbtn" onclick="tg(1)">🕯️ Gói 1: Nhang</div>
-    <div class="pbtn" onclick="tg(5)">🖌️ Gói 2: Xin chữ</div>
-    <div class="pbtn" onclick="tg(50)">🎋 Gói 3: Xem nhanh</div>
-    <div class="pbtn" onclick="tg(200)">🖼️ Gói 4: Luận ảnh</div>
-    <div class="pbtn" style="background:#ff4500;color:#fff" onclick="tg(500)">👑 Gói 5: VIP</div>
+    <div class="pbtn" id="tWalk">🚶 Khách dạo chợ</div>
+    <div class="pbtn" id="tG1">🕯️ Gói 1: Nhang</div>
+    <div class="pbtn" id="tG2">🖌️ Gói 2: Xin chữ</div>
+    <div class="pbtn" id="tG3">🎋 Gói 3: Xem nhanh</div>
+    <div class="pbtn" id="tG4">🖼️ Gói 4: Luận ảnh</div>
+    <div class="pbtn" id="tG5" style="background:#ff4500;color:#fff">👑 Gói 5: VIP</div>
   </div>
 </div>
 
 <div class="box">
   <div class="title">🏮 SẠP GIEO QUẺ & XIN CHỮ ĐẦU XUÂN 🏮</div>
-  <button class="mbtn" id="mb" onclick="tgMusic()">🔇 Nhạc</button>
+  <button class="mbtn" id="mb">🔇 Nhạc</button>
   <div class="grid">
     <div class="item"><span class="hl">Gói 1 (1 Xu):</span> Hoa hồng ➔ Thắp nhang</div>
     <div class="item"><span class="hl">Gói 2 (5 Xu):</span> Bánh chưng ➔ Xin chữ</div>
@@ -87,39 +88,101 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="qbox">
   <div class="qhead">
     <span>📜 HÀNG CHỜ (<span id="qc">0</span> khách)</span>
-    <div class="btn" onclick="pn.style.display='block'">⚙️ Cài đặt / Test</div>
+    <button class="btn" id="btnOpen">⚙️ Cài đặt / Test</button>
   </div>
   <div class="qlist" id="ql"></div>
 </div>
 
+<!-- Tải Socket.io an toàn không làm treo trang nếu lỗi -->
+<script src="/socket.io/socket.io.js" onerror="console.log('Chạy chế độ Offline/Test')"></script>
 <script>
-var sk=typeof io!=="undefined"?io():null,q=[],wds=["PHÚC","LỘC","THỌ","TÂM","AN","ĐẠT"];
-var ac=null,mOn=false,mTm=null,step=0;
-var notes=[523.25,523.25,587.33,659.25,783.99,659.25,587.33,523.25,659.25,659.25,783.99,880,783.99,659.25,587.33,0,783.99,880,1046.5,880,783.99,659.25,587.33,659.25,587.33,523.25,440,523.25,523.25,0,0,0];
+document.addEventListener("DOMContentLoaded", function() {
+  var sk = (typeof io !== "undefined") ? io() : null;
+  var q = [];
+  var wds = ["PHÚC", "LỘC", "THỌ", "TÂM", "AN", "ĐẠT", "TÀI", "VƯỢNG"];
 
-function initAc(){if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}
-function tone(f,d,v,t){if(!f||!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.type=t||"triangle";o.frequency.setValueAtTime(f,ac.currentTime);g.gain.setValueAtTime(0.001,ac.currentTime);g.gain.exponentialRampToValueAtTime(v,ac.currentTime+0.02);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}
-function drum(f,d,v){if(!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.setValueAtTime(f,ac.currentTime);o.frequency.exponentialRampToValueAtTime(40,ac.currentTime+d);g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}
+  // ================= HỆ THỐNG ÂM THANH =================
+  var ac = null, mOn = false, mTm = null, step = 0;
+  var notes = [
+    523.25, 523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25,
+    659.25, 659.25, 783.99, 880.00, 783.99, 659.25, 587.33, 0,
+    783.99, 880.00, 1046.50, 880.00, 783.99, 659.25, 587.33, 659.25,
+    587.33, 523.25, 440.00, 523.25, 523.25, 0, 0, 0
+  ];
 
-function startM(){initAc();if(mTm)clearInterval(mTm);mOn=true;mb.innerText="🔊 Nhạc";mb.classList.add("on");mTm=setInterval(function(){if(!mOn)return;tone(notes[step%notes.length],0.3,0.05,"triangle");step++},330)}
-function stopM(){mOn=false;clearInterval(mTm);mb.innerText="🔇 Nhạc";mb.classList.remove("on")}
-function tgMusic(){mOn?stopM():startM()}
-
-function sfx(lv){
-  initAc();
-  if(lv===5){
-    drum(160,0.2,0.3);setTimeout(function(){drum(160,0.2,0.3)},140);setTimeout(function(){drum(220,0.35,0.35)},280);
-    setTimeout(function(){tone(523.25,0.4,0.2);tone(659.25,0.4,0.2);tone(783.99,0.5,0.2)},300);
-    setTimeout(function(){tone(1046.5,0.7,0.25)},450);
-  }else if(lv>=3){
-    tone(880,0.25,0.18,"sine");setTimeout(function(){tone(1174.66,0.45,0.18,"sine")},100);
-  }else if(lv===2){
-    tone(587.33,0.15,0.15);setTimeout(function(){tone(783.99,0.15,0.15)},90);setTimeout(function(){tone(1046.5,0.35,0.18)},180);
-  }else{
-    tone(392,0.9,0.2,"sine");
+  function initAc() {
+    if (!ac) {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) ac = new AudioContext();
+    }
+    if (ac && ac.state === "suspended") {
+      ac.resume();
+    }
   }
-}
 
-setInterval(function(){var p=document.createElement("div");p.className="petal";p.style.left=Math.random()*100+"vw";p.style.width="10px";p.style.height="10px";document.body.appendChild(p);setTimeout(function(){p.remove()},5000)},600);
-function conn(){var u=tid.value.trim();if(!u)return alert("Nhập ID!");if(!mOn)startM();st.innerText="Đang kết nối @"+u;if(sk)sk.emit("connectTikTok",u)}
-if(sk){sk.on("tiktokStatus",function(m){st.innerText=m});sk.on("chat",function(d){wk(d.nickname,0);var e=q.find(function(x){return x.id===d.uniqueId});if(e){e.cm=d.comment;rq()}});sk.on("gift",gd)}
+  function tone(f, d, v, t) {
+    if (!f || !ac) return;
+    try {
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = t || "triangle";
+      o.frequency.setValueAtTime(f, ac.currentTime);
+      g.gain.setValueAtTime(0.001, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(v, ac.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d);
+      o.connect(g);
+      g.connect(ac.destination);
+      o.start();
+      o.stop(ac.currentTime + d);
+    } catch (e) {}
+  }
+
+  function drum(f, d, v) {
+    if (!ac) return;
+    try {
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = "sine";
+      o.frequency.setValueAtTime(f, ac.currentTime);
+      o.frequency.exponentialRampToValueAtTime(40, ac.currentTime + d);
+      g.gain.setValueAtTime(v, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d);
+      o.connect(g);
+      g.connect(ac.destination);
+      o.start();
+      o.stop(ac.currentTime + d);
+    } catch (e) {}
+  }
+
+  var mb = document.getElementById("mb");
+  function startM() {
+    initAc();
+    if (mTm) clearInterval(mTm);
+    mOn = true;
+    mb.innerText = "🔊 Nhạc";
+    mb.classList.add("on");
+    mTm = setInterval(function() {
+      if (!mOn) return;
+      tone(notes[step % notes.length], 0.3, 0.08, "triangle");
+      step++;
+    }, 330);
+  }
+
+  function stopM() {
+    mOn = false;
+    if (mTm) clearInterval(mTm);
+    mb.innerText = "🔇 Nhạc";
+    mb.classList.remove("on");
+  }
+
+  mb.addEventListener("click", function() {
+    mOn ? stopM() : startM();
+  });
+
+  function sfx(lv) {
+    initAc();
+    if (lv === 5) {
+      drum(160, 0.2, 0.4);
+      setTimeout(function() { drum(160, 0.2, 0.4); }, 140);
+      setTimeout(function() { drum(220, 0.35, 0.45); }, 280);
+      setTimeout(function() { tone(523.25, 0.4, 0.25); tone(659.25, 0.4, 0.25); tone(783.99, 0.5, 0.25); }, 300);
+      setTimeout(function() { tone(1046.5, 0.7, 0.3); }, 450);
+    } else if (lv >= 3) {

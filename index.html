@@ -130,4 +130,73 @@ function spawnSparks(icons,count){
     setTimeout(function(el){el.remove()},1100,s);
   }
 }
-function sfxWalk(){playTone(392,"sine",0.12,0.08,0);playTone(523.25,"sine",0
+function sfxWalk(){playTone(392,"sine",0.12,0.08,0);playTone(523.25,"sine",0.15,0.08,0.12)}
+function sfxNhang(){playTone(440,"sine",0.9,0.15,0);playTone(220,"triangle",0.9,0.1,0)}
+function sfxXinChu(){[523.25,659.25,783.99,1046.5].forEach(function(f,idx){playTone(f,"triangle",0.22,0.12,idx*0.09)})}
+function sfxGoi3(){[587.33,783.99,987.77].forEach(function(f,idx){playTone(f,"square",0.16,0.08,idx*0.08)})}
+function sfxGoi4(){playTone(880,"sine",0.18,0.12,0);playTone(1318.5,"sine",0.35,0.12,0.12)}
+function sfxVip(){[523.25,659.25,783.99,1046.5,1318.5].forEach(function(f,idx){playTone(f,"sawtooth",0.25,0.09,idx*0.08)})}
+
+function tgM(){
+  var btn=document.getElementById("mb");
+  if(!isPlay){
+    var ctx=getCtx();isPlay=true;btn.innerText="🔊 Nhạc";
+    mTimer=setInterval(function(){
+      playTone(notes[noteIdx%notes.length],"triangle",0.35,0.08,0);
+      noteIdx++;
+    },350);
+  }else{isPlay=false;btn.innerText="🔇 Nhạc";clearInterval(mTimer)}
+}
+
+function walkTest(){
+  sfxWalk();spawnSparks(["🌸","🍃"],4);
+  wk("Khách Xuân "+Math.floor(Math.random()*99),0);
+}
+function wk(n,v){
+  if(rd.children.length>10)rd.firstChild.remove();
+  var d=document.createElement("div");d.className="wk"+(v?" vip":"");
+  var l=Math.random()>.5;d.style.left=l?"-80px":"105vw";
+  d.innerHTML=(v?'<div style="font-size:14px">👑✨</div>':'')+'<div class="wn">'+n+'</div><div style="font-size:'+(v?34:28)+'px">'+(v?"🤴":"🧑")+'</div>';
+  rd.appendChild(d);
+  setTimeout(function(){d.style.left=l?"105vw":"-80px"},100);
+  setTimeout(function(){d.remove()},8500);
+}
+function sp(t,c,u,isVip){
+  pt.innerText=t;pc.innerText=c;pu.innerText=u;
+  pop.classList.toggle("vip-pop",!!isVip);
+  ctr.classList.toggle("glow-vip",!!isVip);
+  pop.classList.add("show");shk.classList.add("shake");
+  setTimeout(function(){pop.classList.remove("show");pop.classList.remove("vip-pop");shk.classList.remove("shake");ctr.classList.remove("glow-vip")},3000);
+}
+function rq(){
+  q.sort(function(a,b){return b.p-a.p});qc.innerText=q.length;ql.innerHTML="";
+  q.forEach(function(x,i){
+    var d=document.createElement("div");d.className="tk p"+x.p;
+    d.innerHTML='<img class="av" src="'+x.av+'"><div style="flex:1"><b style="font-size:10px;color:#ffd700">'+(x.p==5?"👑 GÓI 5 VIP":(x.p==4?"GÓI 4: LUẬN ẢNH":"GÓI 3: XEM NHANH"))+'</b><div style="font-weight:bold;font-size:13px">'+x.n+'</div><div style="font-size:12px;color:#ffebcd">'+(x.cm||"Mời đọc bình luận")+'</div></div><div onclick="q.splice('+i+',1);rq()" style="background:#28a745;padding:10px;border-radius:6px;font-weight:bold;font-size:12px;cursor:pointer">Xong ✓</div>';
+    ql.appendChild(d);
+  });
+}
+function gd(d){
+  var c=d.diamondCount;wk(d.nickname,c>=500);
+  if(c>=1&&c<5){
+    sfxNhang();spawnSparks(["🕯️","✨","🙏"],7);
+    sp("🕯️ THẮP NHANG 🕯️","BÌNH AN",d.nickname,false);
+  }else if(c>=5&&c<50){
+    sfxXinChu();spawnSparks(["🖌️","🧧","✨"],8);
+    sp("🖌️ XIN CHỮ 🖌️",wds[Math.floor(Math.random()*wds.length)],d.nickname,false);
+  }else if(c>=50){
+    var p=c>=500?5:(c>=200?4:3);
+    if(p===5){sfxVip();spawnSparks(["👑","🎆","💰","✨"],14)}
+    else if(p===4){sfxGoi4();spawnSparks(["🖼️","✨","🌟"],9)}
+    else{sfxGoi3();spawnSparks(["🎋","🧨","✨"],8)}
+    sp("🎋 GIEO QUẺ 🎋","GÓI "+p,d.nickname,p===5);
+    q.push({id:d.uniqueId,n:d.nickname,av:d.profilePictureUrl,cm:d.lastComment,p:p});rq();
+  }
+}
+function tg(c){
+  var u=c>=500?{n:"Bảo Trâm VIP",cm:"1992 - Chồng 1990, con 2019",av:"https://cdn-icons-png.flaticon.com/512/149/149071.png"}:(c>=200?{n:"Minh Quân",cm:"1995 - Hỏi công danh",av:"https://cdn-icons-png.flaticon.com/512/149/149071.png"}:{n:"Lan Anh",cm:"1998 Nữ - Xem tình duyên",av:"https://cdn-icons-png.flaticon.com/512/149/149071.png"});
+  gd({uniqueId:"t"+Date.now(),nickname:u.n,profilePictureUrl:u.av,diamondCount:c,lastComment:u.cm});
+}
+</script>
+</body>
+</html>

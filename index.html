@@ -11,6 +11,8 @@ input{-webkit-user-select:text;user-select:text}
 body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 .petal{position:absolute;background:#ffb7c5;border-radius:150% 0;opacity:.8;pointer-events:none;animation:fall 5s linear infinite;z-index:1}
 @keyframes fall{0%{transform:translateY(-10vh) rotate(0)}100%{transform:translateY(110vh) rotate(360deg)}}
+.spark{position:fixed;pointer-events:none;font-size:24px;z-index:200;animation:popUp 1.1s ease-out forwards}
+@keyframes popUp{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}60%{opacity:1;transform:translate(-50%,-110%) scale(1.3)}100%{opacity:0;transform:translate(-50%,-160%) scale(.8)}}
 .box{background:rgba(60,10,10,.92);border:2px solid #ffd700;border-radius:10px;margin:8px;padding:8px;z-index:10;position:relative}
 .title{text-align:center;color:#ffd700;font-weight:bold;font-size:14px;margin-bottom:5px}
 .mbtn{position:absolute;top:6px;right:8px;background:#ffd700;color:#8b0000;border:2px solid #fff;font-size:12px;font-weight:bold;padding:3px 10px;border-radius:6px;cursor:pointer;z-index:20}
@@ -21,10 +23,12 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 .stage{flex:1;position:relative;display:flex;flex-direction:column;justify-content:space-between;z-index:5}
 .stall{display:flex;justify-content:space-between;align-items:flex-start;padding:15px 12px}
 .cd{background:#b20000;border:2px solid #ffd700;color:#ffd700;padding:6px 4px;font-weight:bold;font-size:11px;text-align:center;border-radius:4px;width:32px}
-.center{text-align:center;background:rgba(0,0,0,.3);padding:10px 18px;border-radius:15px;border:1px dashed #ffd700}
-.shake{animation:shk .4s infinite}@keyframes shk{25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
+.center{text-align:center;background:rgba(0,0,0,.3);padding:10px 18px;border-radius:15px;border:1px dashed #ffd700;transition:.3s}
+.shake{animation:shk .35s infinite}@keyframes shk{25%{transform:rotate(15deg) scale(1.1)}75%{transform:rotate(-15deg) scale(1.1)}}
+.glow-vip{box-shadow:0 0 25px #ffd700,0 0 45px #ff4500;border-style:solid!important}
 .pop{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);background:#ffd700;color:#8b0000;padding:15px;border-radius:15px;border:4px solid #b20000;text-align:center;z-index:50;transition:.3s;width:80%}
 .pop.show{transform:translate(-50%,-50%) scale(1)}
+.pop.vip-pop{background:linear-gradient(135deg,#fff3b0,#ffd700,#ff9f1c);border-color:#ff2a00;box-shadow:0 0 30px rgba(255,215,0,.9)}
 .road{height:75px;background:rgba(0,0,0,.25);border-top:2px solid #ffd700;border-bottom:2px solid #ffd700;position:relative;overflow:hidden}
 .wk{position:absolute;bottom:5px;display:flex;flex-direction:column;align-items:center;transition:left 8s linear;z-index:15}
 .wn{background:rgba(0,0,0,.8);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;border:1px solid #ffd700;white-space:nowrap}
@@ -39,7 +43,8 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 .panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:2px solid #ffd700;padding:15px;border-radius:12px;z-index:999;width:88vw;max-width:340px}
 .panel input{width:100%;padding:10px;margin:6px 0;border-radius:6px;font-size:14px}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.pbtn{padding:10px 5px;font-size:12px;border-radius:6px;background:#d4af37;color:#000;font-weight:bold;text-align:center;cursor:pointer}
+.pbtn{padding:10px 5px;font-size:12px;border-radius:6px;background:#d4af37;color:#000;font-weight:bold;text-align:center;cursor:pointer;transition:.15s}
+.pbtn:active{transform:scale(.95)}
 </style>
 </head>
 <body>
@@ -52,7 +57,7 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
   <div onclick="conn()" style="background:#28a745;padding:10px;text-align:center;border-radius:6px;font-weight:bold;font-size:13px;cursor:pointer">🔴 Kết nối Live TikTok</div>
   <div id="st" style="font-size:11px;color:#00fa9a;margin-top:5px">Trạng thái: Chưa kết nối</div>
   <div class="pgrid">
-    <div class="pbtn" onclick="wk('Khách Xuân '+Math.floor(Math.random()*99),0)">🚶 Khách dạo chợ</div>
+    <div class="pbtn" onclick="walkTest()">🚶 Khách dạo chợ</div>
     <div class="pbtn" onclick="tg(1)">🕯️ Gói 1: Nhang</div>
     <div class="pbtn" onclick="tg(5)">🖌️ Gói 2: Xin chữ</div>
     <div class="pbtn" onclick="tg(50)">🎋 Gói 3: Xem nhanh</div>
@@ -76,7 +81,7 @@ body{background:linear-gradient(180deg,#8b0000,#b22222 40%,#d4af37);color:#fff;h
 <div class="stage">
   <div class="stall">
     <div class="cd">TÂN<br>NIÊN<br>HẠNH<br>PHÚC</div>
-    <div class="center"><div id="shk" style="font-size:45px">🎋</div><div style="font-size:11px;color:#ffd700">Bình luận thông tin + Tặng quà</div></div>
+    <div class="center" id="ctr"><div id="shk" style="font-size:45px">🎋</div><div style="font-size:11px;color:#ffd700">Bình luận thông tin + Tặng quà</div></div>
     <div class="cd">VẠN<br>SỰ<br>NHƯ<br>Ý</div>
   </div>
   <div class="pop" id="pop"><b id="pt" style="font-size:13px"></b><div id="pc" style="font-size:45px;font-weight:bold;margin:5px 0"></div><b id="pu" style="font-size:12px"></b></div>
@@ -96,33 +101,33 @@ var sk=typeof io!=="undefined"?io():null,q=[],wds=["PHÚC","LỘC","THỌ","TÂM
 setInterval(function(){var p=document.createElement("div");p.className="petal";p.style.left=Math.random()*100+"vw";p.style.width="10px";p.style.height="10px";document.body.appendChild(p);setTimeout(function(){p.remove()},5000)},600);
 function conn(){var u=tid.value.trim();if(!u)return alert("Nhập ID!");st.innerText="Đang kết nối @"+u;if(sk)sk.emit("connectTikTok",u)}
 if(sk){sk.on("tiktokStatus",function(m){st.innerText=m});sk.on("chat",function(d){wk(d.nickname,0);var e=q.find(function(x){return x.id===d.uniqueId});if(e){e.cm=d.comment;rq()}});sk.on("gift",gd)}
-function wk(n,v){if(rd.children.length>10)rd.firstChild.remove();var d=document.createElement("div");d.className="wk"+(v?" vip":"");var l=Math.random()>.5;d.style.left=l?"-80px":"105vw";d.innerHTML='<div class="wn">'+n+'</div><div style="font-size:28px">'+(v?"🤴":"🧑")+'</div>';rd.appendChild(d);setTimeout(function(){d.style.left=l?"105vw":"-80px"},100);setTimeout(function(){d.remove()},8500)}
-function sp(t,c,u){pt.innerText=t;pc.innerText=c;pu.innerText=u;pop.classList.add("show");shk.classList.add("shake");setTimeout(function(){pop.classList.remove("show");shk.classList.remove("shake")},3000)}
-function rq(){q.sort(function(a,b){return b.p-a.p});qc.innerText=q.length;ql.innerHTML="";q.forEach(function(x,i){var d=document.createElement("div");d.className="tk p"+x.p;d.innerHTML='<img class="av" src="'+x.av+'"><div style="flex:1"><b style="font-size:10px;color:#ffd700">'+(x.p==5?"👑 GÓI 5 VIP":(x.p==4?"GÓI 4: LUẬN ẢNH":"GÓI 3: XEM NHANH"))+'</b><div style="font-weight:bold;font-size:13px">'+x.n+'</div><div style="font-size:12px;color:#ffebcd">'+(x.cm||"Mời đọc bình luận")+'</div></div><div onclick="q.splice('+i+',1);rq()" style="background:#28a745;padding:10px;border-radius:6px;font-weight:bold;font-size:12px;cursor:pointer">Xong ✓</div>';ql.appendChild(d)})}
-function gd(d){var c=d.diamondCount;wk(d.nickname,c>=500);if(c>=1&&c<5)sp("🕯️ THẮP NHANG 🕯️","BÌNH AN",d.nickname);else if(c>=5&&c<50)sp("🖌️ XIN CHỮ 🖌️",wds[Math.floor(Math.random()*wds.length)],d.nickname);else if(c>=50){var p=c>=500?5:(c>=200?4:3);sp("🎋 GIEO QUẺ 🎋","GÓI "+p,d.nickname);q.push({id:d.uniqueId,n:d.nickname,av:d.profilePictureUrl,cm:d.lastComment,p:p});rq()}}
-function tg(c){var u=c>=500?{n:"Bảo Trâm VIP",cm:"1992 - Chồng 1990, con 2019",av:"https://cdn-icons-png.flaticon.com/512/149/149071.png"}:(c>=200?{n:"Minh Quân",cm:"1995 - Hỏi công danh",av:"https://cdn-icons-png.flaticon.com/512/149/149071.png"}:{n:"Lan Anh",cm:"1998 Nữ - Xem tình duyên",av:"https://cdn-icons-png.flaticon.com/512/149/149071.png"});gd({uniqueId:"t"+Date.now(),nickname:u.n,profilePictureUrl:u.av,diamondCount:c,lastComment:u.cm})}
 
+// --- BỘ TẠO ÂM THANH & HIỆU ỨNG RIÊNG CHO TỪNG NÚT ---
 var actx=null,mTimer=null,isPlay=false,noteIdx=0;
 var notes=[523.25,587.33,659.25,783.99,880.00,783.99,659.25,587.33,523.25,659.25,783.99,1046.50];
-function tgM(){
-  var btn=document.getElementById("mb");
-  if(!isPlay){
-    if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();
-    if(actx.state==='suspended')actx.resume();
-    isPlay=true;btn.innerText="🔊 Nhạc";
-    mTimer=setInterval(function(){
-      var osc=actx.createOscillator(),gain=actx.createGain();
-      osc.type="triangle";osc.frequency.value=notes[noteIdx%notes.length];
-      gain.gain.setValueAtTime(0.08,actx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+0.35);
-      osc.connect(gain);gain.connect(actx.destination);
-      osc.start();osc.stop(actx.currentTime+0.35);
-      noteIdx++;
-    },350);
-  }else{
-    isPlay=false;btn.innerText="🔇 Nhạc";clearInterval(mTimer);
+
+function getCtx(){
+  if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();
+  if(actx.state==='suspended')actx.resume();
+  return actx;
+}
+function playTone(freq,type,dur,vol,delay){
+  var ctx=getCtx(),t=ctx.currentTime+(delay||0);
+  var osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.type=type||"sine";osc.frequency.setValueAtTime(freq,t);
+  gain.gain.setValueAtTime(vol||0.12,t);
+  gain.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.start(t);osc.stop(t+dur);
+}
+function spawnSparks(icons,count){
+  for(var i=0;i<(count||8);i++){
+    var s=document.createElement("div");s.className="spark";
+    s.innerText=icons[i%icons.length];
+    s.style.left=(20+Math.random()*60)+"vw";
+    s.style.top=(30+Math.random()*40)+"vh";
+    document.body.appendChild(s);
+    setTimeout(function(el){el.remove()},1100,s);
   }
 }
-</script>
-</body>
-</html>
+function sfxWalk(){playTone(392,"sine",0.12,0.08,0);playTone(523.25,"sine",0
